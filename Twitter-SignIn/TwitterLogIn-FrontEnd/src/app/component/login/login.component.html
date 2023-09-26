@@ -1,1 +1,14 @@
-<p>login works!</p>
+<div class="main-container">
+    <div class="main-content">
+        <div class="welcom-text">
+            <p>Welcom To Twitter Third Party Log In</p>
+            
+            <p>You Sucessfully log in to our website using your twitter account</p>
+        </div>
+        <div class="button">
+            <button class="btn btn-info btn-block" (click)="launchTwitterLogin()" type="button" [disabled]="disableButton"> <i *ngIf="isLoading" class="fa fa-spinner fa-spin fa-lg fa-fw"></i> <i class="fa fa-twitter"></i> Sign in with <b>Twitter</b>
+            </button>
+        </div>
+    </div>
+</div>
+

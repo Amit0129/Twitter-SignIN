@@ -5,7 +5,7 @@ import { HomeComponent } from './component/home/home.component';
 
 const routes: Routes = [
   {
-    path:'login',
+    path:'twitter-login',
     component:LoginComponent
   },
   {

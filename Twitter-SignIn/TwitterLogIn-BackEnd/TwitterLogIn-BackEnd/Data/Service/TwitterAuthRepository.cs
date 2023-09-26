@@ -31,7 +31,7 @@ namespace TwitterLogIn_BackEnd.Data.Service
             var client = _clientFactory.CreateClient("twitter");
             var consumerKey = _twitterConfig.Value.AppId;
             var consumerSecret = _twitterConfig.Value.AppSecret;
-            var callbackUrl = "http://localhost:4200/login";
+            var callbackUrl = "http://localhost:4200/twitter-login";
 
             client.DefaultRequestHeaders.Accept.Clear();
             var oauthClient = new OAuthRequest()
