@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using OAuth;
+using System;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -71,6 +72,43 @@ namespace TwitterLogIn_BackEnd.Data.Service
                 throw new System.Exception(ex.Message);
             }
             return requestTokenResponse;
+        }
+
+        public async Task<UserModelDto> GetAccessToken(string token, string oauthVerifier)
+        {
+            var client = _clientFactory.CreateClient("twitter");
+            var consumerKey = _twitterConfig.Value.AppId;
+            var consumerSecret = _twitterConfig.Value.AppSecret;
+
+            var accessTokenResponse = new UserModelDto();
+
+            client.DefaultRequestHeaders.Accept.Clear();
+
+            var oauthClient = new OAuthRequest
+            {
+                Method= "POST",
+                Type= OAuthRequestType.AccessToken,
+                SignatureMethod=OAuthSignatureMethod.HmacSha1,
+                ConsumerKey=consumerKey,
+                ConsumerSecret=consumerSecret,
+                RequestUrl= "https://api.twitter.com/oauth/access_token",
+                Token=token,
+                Version= "1.0a",
+                Realm= "twitter.com"
+            };
+
+            string auth = oauthClient.GetAuthorizationHeader();
+            client.DefaultRequestHeaders.Add("Authorization",auth);
+
+            try
+            {
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            return accessTokenResponse;
         }
     }
 }
