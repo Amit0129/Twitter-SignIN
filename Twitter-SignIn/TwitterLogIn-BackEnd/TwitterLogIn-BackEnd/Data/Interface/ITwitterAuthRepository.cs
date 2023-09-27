@@ -6,5 +6,6 @@ namespace TwitterLogIn_BackEnd.Data.Interface
     public interface ITwitterAuthRepository
     {
         Task<RequestTokenResponse> GetRequestToken();
+        Task<UserModelDto> GetAccessToken(string token, string oauthVerifier);
     }
 }

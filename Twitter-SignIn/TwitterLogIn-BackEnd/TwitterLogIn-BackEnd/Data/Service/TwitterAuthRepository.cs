@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Options;
 using OAuth;
 using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -86,23 +87,41 @@ namespace TwitterLogIn_BackEnd.Data.Service
 
             var oauthClient = new OAuthRequest
             {
-                Method= "POST",
-                Type= OAuthRequestType.AccessToken,
-                SignatureMethod=OAuthSignatureMethod.HmacSha1,
-                ConsumerKey=consumerKey,
-                ConsumerSecret=consumerSecret,
-                RequestUrl= "https://api.twitter.com/oauth/access_token",
-                Token=token,
-                Version= "1.0a",
-                Realm= "twitter.com"
+                Method = "POST",
+                Type = OAuthRequestType.AccessToken,
+                SignatureMethod = OAuthSignatureMethod.HmacSha1,
+                ConsumerKey = consumerKey,
+                ConsumerSecret = consumerSecret,
+                RequestUrl = "https://api.twitter.com/oauth/access_token",
+                Token = token,
+                Version = "1.0a",
+                Realm = "twitter.com"
             };
 
             string auth = oauthClient.GetAuthorizationHeader();
-            client.DefaultRequestHeaders.Add("Authorization",auth);
+            client.DefaultRequestHeaders.Add("Authorization", auth);
 
             try
             {
+                var content = new FormUrlEncodedContent(new[]{new KeyValuePair<string, string>("oauth_verifier", oauthVerifier)});
 
+                using (var response = await client.PostAsync(oauthClient.RequestUrl, content))
+                {
+                    response.EnsureSuccessStatusCode();
+
+                    //twiiter responds with a string concatenated by &
+                    var responseString = response.Content.ReadAsStringAsync().Result.Split("&");
+
+                    //split by = to get actual values
+                    accessTokenResponse = new UserModelDto
+                    {
+                        Token = responseString[0].Split("=")[1],
+                        TokenSecret = responseString[1].Split("=")[1],
+                        UserId = responseString[2].Split("=")[1],
+                        Username = responseString[3].Split("=")[1]
+                    };
+
+                }
             }
             catch (Exception ex)
             {
