@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -11,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using TwitterLogIn_BackEnd.Context;
 using TwitterLogIn_BackEnd.Data.Interface;
 using TwitterLogIn_BackEnd.Data.Service;
 using TwitterLogIn_BackEnd.Model;
@@ -62,6 +64,8 @@ namespace TwitterLogIn_BackEnd
 
             //Twitter Service
             services.Configure<TwitterSettings>(Configuration.GetSection("TwitterSettings"));
+
+            services.AddDbContext<DataContext>(opts => opts.UseSqlServer(Configuration["ConnectionString:TwitterDB"]));
 
             //Service and Interface ConfigurationService
             services.AddScoped<ITwitterAuthRepository, TwitterAuthRepository>();

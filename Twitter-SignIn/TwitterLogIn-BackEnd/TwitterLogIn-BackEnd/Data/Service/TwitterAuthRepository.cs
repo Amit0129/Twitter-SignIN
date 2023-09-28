@@ -68,13 +68,15 @@ namespace TwitterLogIn_BackEnd.Data.Service
                     };
                 }
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
-                throw new System.Exception(ex.Message);
+                throw new Exception(ex.Message);
             }
             return requestTokenResponse;
         }
 
+
+        //Get Access Token
         public async Task<UserModelDto> GetAccessToken(string token, string oauthVerifier)
         {
             var client = _clientFactory.CreateClient("twitter");
@@ -99,18 +101,23 @@ namespace TwitterLogIn_BackEnd.Data.Service
             };
 
             string auth = oauthClient.GetAuthorizationHeader();
+
             client.DefaultRequestHeaders.Add("Authorization", auth);
+
 
             try
             {
-                var content = new FormUrlEncodedContent(new[]{new KeyValuePair<string, string>("oauth_verifier", oauthVerifier)});
+                var content = new FormUrlEncodedContent(new[]{
+                new KeyValuePair<string, string>("oauth_verifier", oauthVerifier)
+            });
 
                 using (var response = await client.PostAsync(oauthClient.RequestUrl, content))
                 {
                     response.EnsureSuccessStatusCode();
 
                     //twiiter responds with a string concatenated by &
-                    var responseString = response.Content.ReadAsStringAsync().Result.Split("&");
+                    var responseString = response.Content.ReadAsStringAsync()
+                                               .Result.Split("&");
 
                     //split by = to get actual values
                     accessTokenResponse = new UserModelDto
@@ -120,7 +127,6 @@ namespace TwitterLogIn_BackEnd.Data.Service
                         UserId = responseString[2].Split("=")[1],
                         Username = responseString[3].Split("=")[1]
                     };
-
                 }
             }
             catch (Exception ex)
@@ -129,5 +135,6 @@ namespace TwitterLogIn_BackEnd.Data.Service
             }
             return accessTokenResponse;
         }
+
     }
 }
