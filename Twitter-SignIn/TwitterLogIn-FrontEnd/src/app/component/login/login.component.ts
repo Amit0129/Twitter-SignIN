@@ -18,8 +18,6 @@ export class LoginComponent implements OnInit {
     this.route.queryParamMap.subscribe(params => {
       const oauth_token = this.route.snapshot.queryParamMap.get('oauth_token');
       const oauth_verifier = this.route.snapshot.queryParamMap.get("oauth_verifier");
-      console.log(oauth_token);
-      console.log(oauth_verifier)
       if (oauth_token && oauth_verifier) {
         this.disableButton = true;
         this.isLoading = true;

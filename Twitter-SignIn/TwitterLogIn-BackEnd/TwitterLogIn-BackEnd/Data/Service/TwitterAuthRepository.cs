@@ -3,9 +3,11 @@ using Microsoft.Extensions.Options;
 using OAuth;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using TwitterLogIn_BackEnd.Context;
 using TwitterLogIn_BackEnd.Data.Interface;
 using TwitterLogIn_BackEnd.Model;
 
@@ -16,11 +18,11 @@ namespace TwitterLogIn_BackEnd.Data.Service
         private readonly IConfiguration _config;
         private readonly IHttpClientFactory _clientFactory;
         private readonly IOptions<TwitterSettings> _twitterConfig;
-        //private readonly DataContext _context;
+        private readonly DataContext _context;
 
-        public TwitterAuthRepository(IConfiguration config, IHttpClientFactory clientFactory, IOptions<TwitterSettings> twitterConfig)//, DataContext context
+        public TwitterAuthRepository(IConfiguration config, IHttpClientFactory clientFactory, IOptions<TwitterSettings> twitterConfig, DataContext context)//
         {
-            //_context = context;
+            _context = context;
             _twitterConfig = twitterConfig;
             _clientFactory = clientFactory;
             _config = config;
@@ -120,6 +122,7 @@ namespace TwitterLogIn_BackEnd.Data.Service
                                                .Result.Split("&");
 
                     //split by = to get actual values
+                    var length = responseString.Length;
                     accessTokenResponse = new UserModelDto
                     {
                         Token = responseString[0].Split("=")[1],
@@ -127,6 +130,21 @@ namespace TwitterLogIn_BackEnd.Data.Service
                         UserId = responseString[2].Split("=")[1],
                         Username = responseString[3].Split("=")[1]
                     };
+                    var userAllInfo = new UserInfoModel
+                    {
+                        Token = responseString[0].Split("=")[1],
+                        TokenSecret = responseString[1].Split("=")[1],
+                        UserId = responseString[2].Split("=")[1],
+                        Username = responseString[3].Split("=")[1],
+
+                    };
+                    var userInfo = _context.UserAllInfo.FirstOrDefault(x => x.UserId == userAllInfo.UserId);
+                    if (userInfo == null)
+                    {
+                        _context.UserAllInfo.Add(userAllInfo);
+                        _context.SaveChanges();
+                    }
+
                 }
             }
             catch (Exception ex)
